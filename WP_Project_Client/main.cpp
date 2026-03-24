@@ -13,6 +13,7 @@
 
 #include "map.h"
 #include "Player.h"
+#include "PlayerManager.h"
 
 #pragma comment(lib, "Msimg32.lib")
 
@@ -71,7 +72,8 @@ int  WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 }
 
 //전역변수 선언
-extern Cell game_map_init[MAP_WIDTH][MAP_HEIGHT];
+extern TileMap map;
+extern PlayerManager playerManager;
 
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
