@@ -134,11 +134,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Direct2D_Player_Render.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameProtocol.h" />
-    <ClInclude Include="head.h" />
     <ClInclude Include="map.h" />
     <ClInclude Include="math.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

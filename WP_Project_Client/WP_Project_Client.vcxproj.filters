@@ -26,9 +26,6 @@
     <ClInclude Include="GameProtocol.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="head.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="map.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -39,6 +36,12 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Direct2D_Player_Render.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

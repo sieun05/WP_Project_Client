@@ -19,8 +19,6 @@ LPCTSTR lpszWindowName = L"2025 Window Programming Exam";
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
 
-int monster_cnt{};
-int dead_cnt{};
 
 ////(25.06.08) - 오시은
 //알파블렌딩을 위한 변수
