@@ -1,0 +1,80 @@
+## Visual Studio 관련 ##
+.vs/
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+*.pdb
+*.opendb
+*.VC.db
+*.VC.VC.opendb
+
+## 빌드 결과물 ##
+[Bb]in/
+[Dd]ebug*/
+[Rr]elease*/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]uild/
+ipch/
+*.obj
+*.exe
+*.dll
+*.lib
+*.app
+*.iobj
+*.idb
+*.ipdb
+*.log
+*.sdf
+*.tlog
+*.pch
+*.pdb
+
+## 사용자 설정 파일 ##
+*.user
+*.rsuser
+*.suo
+*.ncb
+*.cachefile
+*.aps
+*.sln.docstates
+
+## 패키지 및 기타 ##
+*.nuget/
+*.nupkg
+*.vspscc
+*.vssscc
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+## 임시/백업 ##
+*_i.c
+*_p.c
+*_h.h
+*.tmp
+*.tmp_proj
+*.log
+*.vsix
+*.bak
+*.orig
+
+## 기타 IDE 확장 ##
+_ReSharper*/
+*.DotSettings.user
+*.DotSettings
+
+## CMake (Visual Studio로 사용하는 경우) ##
+CMakeFiles/
+CMakeCache.txt
+CMakeScripts/
+Testing/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
