@@ -4,6 +4,9 @@
 #define MAP_WIDTH 100
 #define MAP_HEIGHT 100
 
+#define MAP_PIXEL_WIDTH MAP_WIDTH * CELL_SIZE
+#define MAP_PIXEL_HEIGHT MAP_HEIGHT * CELL_SIZE
+
 class TileMap 
 {
 public:
