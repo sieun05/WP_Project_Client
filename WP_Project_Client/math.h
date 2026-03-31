@@ -1,5 +1,7 @@
 #pragma once
 
+#define CELL_SIZE 60
+
 struct Cell {
 	Cell() = default;
 	Cell(int type) : type(type), block_num(0) {}
