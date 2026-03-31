@@ -229,7 +229,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			break;
 		} //WM_TIMER case 1
 		break;
-		} 
+		} //WM_TIMER switch - wParam switch
 	} //WM_TIMER switch
 
 	case WM_KEYDOWN:
@@ -250,7 +250,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			//	DWORD now = GetTickCount64();
 			//	int slot = InvenSelec_Nor - 1;
 			//	break;
-		} //WM_KEYDOWN switch
+		} //WM_KEYDOWN switch - wParam switch
+	} //WM_KEYDOWN switch
 
 	case WM_PAINT:
 	{
@@ -323,6 +324,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		return 0;
 	}//WM_DESTROY switch
-	} 
 	return DefWindowProc(hWnd, iMessage, wParam, lParam);
-}
+	} //WndProc iMessage switch 
+} //WndProc
