@@ -34,7 +34,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 int  WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_  LPSTR lpszCmdParam, _In_  int nCmdShow)
 {
 	HWND hWnd;
-	MSG Message;
+	//MSG Message;
 	WNDCLASSEX WndClass;
 	g_hInst = hInstance;
 
@@ -67,14 +67,43 @@ int  WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
-	while (GetMessage(&Message, 0, 0, 0)) {
-		TranslateMessage(&Message);
-		DispatchMessage(&Message);
-	}
-	return Message.wParam;
+	MSG msg = {};
+	bool running = true;
+
+	ULONGLONG lastTime = GetTickCount64();
+
+	while(running){
+
+		//1. 윈도우 메세지 처리(비동기)
+		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+			if (msg.message == WM_QUIT) {
+				running = false;
+				break;
+			}
+
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}// WinMain while(GetMessage(&Message, 0, 0, 0))
+	
+	//2. 게임 로직 업데이트 (deltaTime 계산)
+		ULONGLONG currentTime = GetTickCount64();
+		double deltaTime = (currentTime - lastTime) / 1000.0; // 초 단위로 변환
+		lastTime = currentTime;
+
+		//게임 로직 업데이트 함수 호출 (수정. 게임 월드 클래스 만들어서 구현할지 고민)
+		//UpdateGameLogic(deltaTime);
+		playerManager.Update(deltaTime);
+
+		InvalidateRect(hWnd, NULL, FALSE); // 화면 갱신 요청
+
+		//(선택) CPU쉬게하기
+		Sleep(1); // 1ms 쉬기 (필요에 따라 조절)
+	}// WinMain while(running)
 }
 
 //전역변수 선언
+
+//맵, 플레이어매니저
 extern TileMap map;
 extern PlayerManager playerManager;
 
@@ -107,11 +136,11 @@ int by{};
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
-	HDC hdc, mdc, memdc, memdc2;
+	/*HDC hdc, mdc, memdc, memdc2;
 	HDC maskDC, tempDC;
 	HGDIOBJ oldMask;
 	PAINTSTRUCT ps;
-	HBITMAP hbitmap;
+	HBITMAP hbitmap;*/
 	static RECT clientRect;
 	TCHAR txt[100];
 
@@ -146,9 +175,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
 		//맵 초기화 (수정. 서버에서 초기 맵 데이터 받아서 저장)
 		//map.InitMap();
-
-		//타이머 셋 (수정.)
-		SetTimer(hWnd, 1, 20, NULL);
 
 		//윈도우 창 설정값 변수에 저장
 		GetClientRect(hWnd, &clientRect);
@@ -210,28 +236,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		break;
 	} //WM_CREATE switch
 
-	case WM_TIMER:
-	{
-		switch (wParam) {
-		case 1:
-		{
-			//게임 상태 업데이트 (수정. 타이틀, 게임플레이, 게임오버 / 인벤창, 제작창, 요리창)
-			//게임 상태 업데이트 될 때마다 초기값으로 리셋
-
-			//게임 오브젝트 업데이트 (매 프레임마다 실행. deltaTime 계산, 수정)
-			//playerManager.Update(0.02f); // 20ms마다 업데이트, deltaTime은 0.02초로 가정
-			//GameObject* player = playerManager.GetPlayer(myPlayerId);
-
-			//비트맵 업데이트 (수정. 애니메이션, 효과 등)
-
-			//화면 업데이트, 더블버퍼링
-			InvalidateRect(hWnd, NULL, FALSE);
-			break;
-		} //WM_TIMER case 1
-		break;
-		} //WM_TIMER switch - wParam switch
-	} //WM_TIMER switch
-
 	case WM_KEYDOWN:
 	{
 		switch (wParam) {
@@ -259,17 +263,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		GetClientRect(hWnd, &clientRect);
 
 		//렌더링을 위한 HDC설정 (더블버퍼링)
-		hdc = BeginPaint(hWnd, &ps);
+		/*hdc = BeginPaint(hWnd, &ps);
 		mdc = CreateCompatibleDC(hdc);
 		hbitmap = CreateCompatibleBitmap(hdc, clientRect.right, clientRect.bottom);
 		SelectObject(mdc, (HBITMAP)hbitmap);
 		memdc = CreateCompatibleDC(mdc);
 		memdc2 = CreateCompatibleDC(mdc);
-		FillRect(mdc, &clientRect, (HBRUSH)GetStockObject(BLACK_BRUSH));
+		FillRect(mdc, &clientRect, (HBRUSH)GetStockObject(WHITE_BRUSH));*/
 
 		//Direct2D 렌더링 시작
 		g_pRenderTarget->BeginDraw();
-		g_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black)); // 배경색
+		g_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White)); // 배경색
 
 		//게임상태마다 렌더링 다름	(수정. 타이틀, 게임플레이, 게임오버 / 인벤창, 제작창, 요리창)
 
@@ -298,12 +302,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		g_pRenderTarget->EndDraw();
 
 		//GDI 렌더링 끝, 메모리 해제
-		DeleteDC(memdc);
+		/*DeleteDC(memdc);
 		DeleteDC(memdc2);
 		DeleteDC(mdc);
 		DeleteObject(hbitmap);
 
-		EndPaint(hWnd, &ps);
+		EndPaint(hWnd, &ps);*/
 		break;
 	} //WM_PAINT switch
 
