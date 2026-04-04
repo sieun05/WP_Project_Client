@@ -4,13 +4,14 @@
 
 struct Cell {
 	Cell() = default;
-	Cell(int type) : type(type), block_num(0) {}
-	Cell(int type, int block_num) : type(type), block_num(block_num) {}
+	Cell(int type) : type(type), block_num(0), frame(0) {}
+	Cell(int type, int block_num) : type(type), block_num(block_num), frame(0) {}
 	Cell(const Cell& other) = default;
 	Cell& operator=(const Cell& other) = default;
 
 	int type;
 	int block_num;
+	int frame;
 };
 
 struct Vec2 {
