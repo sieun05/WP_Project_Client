@@ -56,8 +56,8 @@ int  WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	hWnd = CreateWindow(
 		lpszClass,
 		lpszWindowName,
-		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
-		0, 0,
+		WS_OVERLAPPEDWINDOW,
+		100, 100,
 		1280,
 		720,
 		NULL,
@@ -104,7 +104,7 @@ int  WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 //전역변수 선언
 
 //맵, 플레이어매니저
-extern TileMap map;
+extern TileMap g_map;
 extern PlayerManager playerManager;
 
 //윈도우 크기, 중앙 좌표 변수
@@ -239,6 +239,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	case WM_KEYDOWN:
 	{
 		switch (wParam) {
+		case 'a':
+			bx -= 10; //카메라 이동 (수정. 플레이어 이동에 따라 카메라가 따라오도록 수정)
+			break;
+		case 'd':
+			bx += 10;
+			break;
+		case 'w':
+			by -= 10;
+			break;
+		case 's':
+			by += 10;
+			break;
 		case 'Q':
 		case 'q':
 			//게임 종료 (수정. 타이틀 화면에서만 종료, 게임플레이 중에는 확인창 띄우기)
@@ -286,7 +298,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		// 몬스터, 플레이어 깊이정렬이 필요할 때는 타일 + 오브젝트를 리스트로 만들어서 정렬한 뒤 렌더링한다)
 		// 맵이 여러 개라면 맵 매니저가 필요해진다. (씬 전환)
 
-		//map.Render();
+		g_map.Render(bx, by);
 		playerManager.Render();
 
 		//수정. 지금까지 그린 것 출력
