@@ -75,7 +75,7 @@ int  WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	ULONGLONG lastTime = GetTickCount64();
 
-	while(running){
+	while (running) {
 
 		//1. 윈도우 메세지 처리(비동기)
 		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
@@ -87,7 +87,7 @@ int  WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}// WinMain while(GetMessage(&Message, 0, 0, 0))
-	
+
 	//2. 게임 로직 업데이트 (deltaTime 계산)
 		ULONGLONG currentTime = GetTickCount64();
 		double deltaTime = (currentTime - lastTime) / 1000.0; // 초 단위로 변환
@@ -101,7 +101,7 @@ int  WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 		//(선택) CPU쉬게하기
 		Sleep(1); // 1ms 쉬기 (필요에 따라 조절)
-		
+
 	}// WinMain while(running)
 
 	return (int)msg.wParam;
@@ -173,42 +173,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			return -1;
 		}
 
-		//수정. 프로젝트에 비트맵 추가 안 함
-		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\타일\\벽.png", &g_WallBitmap);
-		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\타일\\땅3.png", &ground[0]);
-		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\타일\\풀땅.png", &ground[1]);
-		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\타일\\주황풀땅3.png", &ground[2]);
-		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\타일\\물.png", &water);
-
-		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\플레이어\\1.png", &PlayerBmp);
-
-		//맵 초기화 (수정. 서버에서 초기 맵 데이터 받아서 저장)
-		//map.InitMap();
-
 		//윈도우 창 설정값 변수에 저장
 		GetClientRect(hWnd, &clientRect);
 		width = clientRect.right - clientRect.left;
 		height = clientRect.bottom - clientRect.top;
-
-		//윈도우창 크기에 따라 윈도우에 나타나는 타일 개수 (가로, 세로)
-		rect_width = width / CELL_SIZE;
-		rect_height = height / CELL_SIZE;
-
-		//중앙좌표
-		centerx = (clientRect.left + clientRect.right) / 2;
-		centery = (clientRect.top + clientRect.bottom) / 2;
-
-		//카메라 시작위치(수정. 서버에서 플레이어 위치 받아서 시작, 카메라 위치는 플레이어 좌표값에 종속)
-		bx = MAP_PIXEL_WIDTH / 2 - width / 2;
-		by = MAP_PIXEL_HEIGHT / 2 - height / 2;
-
-		// 화면 밖으로 벗어나지 않게 보정 
-		// (수정. 플레이어 좌표값에 따라 카메라가 화면 벗어나지 않게 보정. 
-		// 플레이어 클래스에 넣을지 고민)
-		if (bx < 0) bx = 0;
-		if (by < 0) by = 0;
-		if (bx > MAP_PIXEL_WIDTH - width) bx = MAP_PIXEL_WIDTH - width;
-		if (by > MAP_PIXEL_HEIGHT - height) by = MAP_PIXEL_HEIGHT - height;
 
 		//알파블렌딩, 그라디언트 스톱 생성
 		g_pRenderTarget->CreateGradientStopCollection(stops, 2, &pGradientStops);
@@ -229,18 +197,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			pGradientStops,
 			&pRadialBrush
 		);
-
-		//플레이어데이터 서버에서 받아서 저장 (수정, 비활성화)
-		/*p.dir = DIR_DOWN;
-		p.baseMp = 100;
-		p.maxMp = 100;
-		p.baseHp = 100;
-		p.maxHp = 100;
-		p.hp = 100;
-		p.mp = 100;
-		p.maxMp = p.baseMp;
-		p.mp = p.maxMp;
-		p.hunger = 100;*/
 
 		break;
 	} //WM_CREATE switch
@@ -307,8 +263,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		// 몬스터, 플레이어 깊이정렬이 필요할 때는 타일 + 오브젝트를 리스트로 만들어서 정렬한 뒤 렌더링한다)
 		// 맵이 여러 개라면 맵 매니저가 필요해진다. (씬 전환)
 
-		g_map.Render(bx, by);
-		playerManager.Render();
+		/*g_map.Render(bx, by);
+		playerManager.Render();*/
 
 		//수정. 지금까지 그린 것 출력
 		g_pRenderTarget->FillRectangle(

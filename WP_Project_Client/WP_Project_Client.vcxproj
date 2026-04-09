@@ -128,11 +128,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Direct2D_Player_Render.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="main.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="map.cpp" />
     <ClCompile Include="WP_main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="소스.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Direct2D_Player_Render.h" />
