@@ -129,13 +129,14 @@
   <ItemGroup>
     <ClCompile Include="Direct2D_Player_Render.cpp" />
     <ClCompile Include="main.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="map.cpp" />
+    <ClCompile Include="Network.cpp" />
+    <ClCompile Include="PlayerManager.cpp" />
     <ClCompile Include="WP_main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="소스.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Direct2D_Player_Render.h" />
@@ -143,8 +144,10 @@
     <ClInclude Include="GameProtocol.h" />
     <ClInclude Include="map.h" />
     <ClInclude Include="math.h" />
+    <ClInclude Include="Network.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerManager.h" />
+    <ClInclude Include="socket_f.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -59,6 +59,11 @@ bool InitDirect2D(HWND hWnd) {
     RECT rc;
     GetClientRect(hWnd, &rc);
 
+    if (rc.right == 0 || rc.bottom == 0) {
+        //
+        return false;
+    }
+
     D2D1_RENDER_TARGET_PROPERTIES props = D2D1::RenderTargetProperties();
     D2D1_HWND_RENDER_TARGET_PROPERTIES hwndProps =
         D2D1::HwndRenderTargetProperties(hWnd,
