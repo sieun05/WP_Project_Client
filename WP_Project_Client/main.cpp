@@ -1,3 +1,5 @@
+#include "Network.h"
+
 #include <windows.h>
 #include <tchar.h>
 #include <stdio.h>
@@ -75,6 +77,8 @@ int  WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	ULONGLONG lastTime = GetTickCount64();
 
+	NetworkInit();
+
 	while(running){
 
 		//1. 윈도우 메세지 처리(비동기)
@@ -87,6 +91,8 @@ int  WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}// WinMain while(GetMessage(&Message, 0, 0, 0))
+
+		NetworkUpdate();
 	
 	//2. 게임 로직 업데이트 (deltaTime 계산)
 		ULONGLONG currentTime = GetTickCount64();
@@ -95,7 +101,9 @@ int  WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 		//게임 로직 업데이트 함수 호출 (수정. 게임 월드 클래스 만들어서 구현할지 고민)
 		//UpdateGameLogic(deltaTime);
-		playerManager.Update(deltaTime);
+		
+		for(auto& p : PlayerManager::GetInstance().GetPlayers())
+			p.Update(deltaTime);
 
 		InvalidateRect(hWnd, NULL, FALSE); // 화면 갱신 요청
 
@@ -104,6 +112,7 @@ int  WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		
 	}// WinMain while(running)
 
+	NetworkRelease();
 	return (int)msg.wParam;
 }
 
@@ -142,6 +151,7 @@ int by{};
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
+
 	HDC hdc;
 	PAINTSTRUCT ps;
 
@@ -160,6 +170,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	switch (iMessage) {
 	case WM_CREATE:
 	{
+
 		InitDirect2D(hWnd);
 		CoInitialize(NULL); // WIC용
 		HRESULT hr = CoCreateInstance(
@@ -230,17 +241,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			&pRadialBrush
 		);
 
-		//플레이어데이터 서버에서 받아서 저장 (수정, 비활성화)
-		/*p.dir = DIR_DOWN;
-		p.baseMp = 100;
-		p.maxMp = 100;
-		p.baseHp = 100;
-		p.maxHp = 100;
-		p.hp = 100;
-		p.mp = 100;
-		p.maxMp = p.baseMp;
-		p.mp = p.maxMp;
-		p.hunger = 100;*/
+		SetWindowLong(hWnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+
+		SetWindowPos(hWnd, NULL, 0, 0, 0, 0,
+			SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+
+		RECT wr, cr;
+		GetWindowRect(hWnd, &wr);
+		GetClientRect(hWnd, &cr);
+
+		TCHAR buf[200];
+		wsprintf(buf, _T("W: %d H: %d / CW: %d CH: %d"),
+			wr.right - wr.left,
+			wr.bottom - wr.top,
+			cr.right - cr.left,
+			cr.bottom - cr.top);
+
+		MessageBox(hWnd, buf, _T("SIZE"), MB_OK);
 
 		break;
 	} //WM_CREATE switch
@@ -276,10 +293,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			//	int slot = InvenSelec_Nor - 1;
 			//	break;
 		} //WM_KEYDOWN switch - wParam switch
-	} //WM_KEYDOWN switch
 
+		break;
+	} //WM_KEYDOWN switch
 	case WM_PAINT:
 	{
+
+
 		//클라이언트 값 가져오기
 		GetClientRect(hWnd, &clientRect);
 
@@ -308,7 +328,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		// 맵이 여러 개라면 맵 매니저가 필요해진다. (씬 전환)
 
 		g_map.Render(bx, by);
-		playerManager.Render();
+		
+		for (auto& p : PlayerManager::GetInstance().GetPlayers())
+			p.Render();
 
 		//수정. 지금까지 그린 것 출력
 		g_pRenderTarget->FillRectangle(
