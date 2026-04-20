@@ -23,7 +23,7 @@ public:
 	void SetWaterSel(int new_water_sel) { water_sel = new_water_sel; }
 
 	void DrawGroundTile(int x, int y, int map_col, int map_row);
-	void DrawWallTime(int x, int y, int map_col, int map_row, int wallpaint);
+	void DrawWallTile(int x, int y, int map_col, int map_row, int wallpaint);
 	void DrawGround2Tile(int groundtile_num, int x, int y, int map_col, int map_row);
 	void DrawWaterTile(int x, int y, int map_col, int map_row);
 

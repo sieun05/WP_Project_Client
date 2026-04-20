@@ -37,7 +37,7 @@ void TileMap::Render(int bx, int by)
 			case 2:
 			case 3:
 				wallpaint = 0;
-				DrawWallTime(x, y, map_col, map_row, wallpaint);
+				DrawWallTile(x, y, map_col, map_row, wallpaint);
 				break;
 			case 5:
 			case 6:
@@ -56,6 +56,40 @@ void TileMap::Render(int bx, int by)
 				DrawWaterTile(x, y, map_col, map_row);
 				break;
 			}//switch(GetCell(map_col, map_row).type)
+		}//for col
+	}//for row
+
+	for (int row{}; row <= SCREEN_HEIGHT_CELL_CNT; ++row) {
+		for (int col{}; col <= SCREEN_WIDTH_CELL_CNT; ++col) {
+			int map_col = (start_col + col);
+			int map_row = (start_row + row);
+
+			if (map_row >= MAP_HEIGHT or map_col >= MAP_WIDTH) continue;
+
+			int x = col * CELL_SIZE - offset_x;
+			int y = row * CELL_SIZE - offset_y;
+
+			//벽에 가려진 땅 부분 비트맵
+
+			switch (game_map[map_row][map_col].type) {
+			case 0:
+			case 5:
+			case 6:
+			case 7:
+			case 9:
+			case 10:
+			case 11:
+				DrawGroundwallTile(x, y, map_col, map_row);
+				break;
+			case 1:
+			case 2:
+			case 3:
+				wallpaint = 1;
+				DrawWallTile(x, y, map_col, map_row, wallpaint);
+				break;
+			}
+
+			
 		}//for col
 	}//for row
 }
@@ -235,7 +269,7 @@ void TileMap::DrawGroundTile(int screenX, int screenY, int mapX, int mapY)
 	}
 }
 
-void TileMap::DrawWallTime(int screenX, int screenY, int mapX, int mapY, int wallpaint)
+void TileMap::DrawWallTile(int screenX, int screenY, int mapX, int mapY, int wallpaint)
 {
 	int srcX{}, srcY{};
 	int sx{}, sy{};
