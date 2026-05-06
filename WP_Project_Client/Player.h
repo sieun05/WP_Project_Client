@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "Direct2D_Player_Render.h"
 
+
 static constexpr int PLAYER_SPRITE_SIZE = 64;  // 한 프레임 크기
 static constexpr int PLAYER_SPRITE_FRAMES = 4;   // 프레임 수
 
@@ -32,8 +33,8 @@ public:
 		//25.06.08 - 오시은
 		//캐릭터 크기 조정 변수 수정
 		int half = PLAYER_SIZE / 2;
-		int drawX = x - half;
-		int drawY = y - half;
+		int drawX = GetPos().x - half;
+		int drawY = GetPos().y - half;
 
 		int row = 0;
 		switch (dir) {
@@ -54,8 +55,8 @@ public:
 			row = 0; break;
 		}
 
-		int srcX = (p->anim % PLAYER_SPRITE_FRAMES) * PLAYER_SPRITE_SIZE;
-		int srcY;
+		int srcX{};
+		int srcY{};
 
 		//if (!p->isHurt)
 		//	srcY = row * PLAYER_SPRITE_SIZE;

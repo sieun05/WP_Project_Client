@@ -100,8 +100,8 @@ void NetworkUpdate()
                 ptr += sizeof(np);
 
                 int id = ntohl(np.id);
-                float x = (int32_t)ntohl(np.x) / 100.0f;
-                float y = (int32_t)ntohl(np.y) / 100.0f;
+                float x = (int32_t)ntohl(np.x);
+                float y = (int32_t)ntohl(np.y);
                 int dir = ntohl(np.dir);
 
                 Player p(id, Vec2(x, y), dir);

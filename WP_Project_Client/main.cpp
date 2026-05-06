@@ -33,6 +33,21 @@ LPCTSTR lpszWindowName = _T("Client");
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
 
+//배경 좌표 변수, 카메라 위치 (수정. 검색-카메라 시작위치)
+int bx{};
+int by{};
+
+//윈도우 크기, 중앙 좌표 변수
+int width{};
+int height{};
+double rect_width{};
+double rect_height{};
+int centerx{};
+int centery{};
+
+//내 플레이어 id 변수 (playerManager에서 타 플레이어와 구분)
+extern uint32_t g_myId;
+
 int  WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_  LPSTR lpszCmdParam, _In_  int nCmdShow)
 {
 	HWND hWnd;
@@ -99,6 +114,16 @@ int  WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		double deltaTime = (currentTime - lastTime) / 1000.0; // 초 단위로 변환
 		lastTime = currentTime;
 
+		if (g_myId != -1) {
+			Vec2 ppos = PlayerManager::GetInstance().GetPlayers()[g_myId].GetPos();
+
+			//카메라 위치는 플레이어 좌표값에 종속
+			bx = ppos.x - width / 2;
+			by = ppos.y - height / 2;
+		}
+
+		// 화면 밖으로 벗어나지 않게 보정
+
 		//게임 로직 업데이트 함수 호출 (수정. 게임 월드 클래스 만들어서 구현할지 고민)
 		//UpdateGameLogic(deltaTime);
 		
@@ -122,17 +147,6 @@ int  WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 extern TileMap g_map;
 extern PlayerManager playerManager;
 
-//윈도우 크기, 중앙 좌표 변수
-int width{};
-int height{};
-double rect_width{};
-double rect_height{};
-int centerx{};
-int centery{};
-
-//내 플레이어 id 변수 (playerManager에서 타 플레이어와 구분)
-int myPlayerId{};
-
 //bitmap 물 렌더링 변수 (맵 클래스에 넣어버릴까?)
 int water_sel{};
 int water_delay{};
@@ -145,9 +159,7 @@ int water_delay{};
 int min{};
 int sec{};
 
-//배경 좌표 변수, 카메라 위치 (수정. 검색-카메라 시작위치)
-int bx{};
-int by{};
+
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
@@ -155,11 +167,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	HDC hdc;
 	PAINTSTRUCT ps;
 
-	/*HDC hdc, mdc, memdc, memdc2;
-	HDC maskDC, tempDC;
-	HGDIOBJ oldMask;
-	PAINTSTRUCT ps;
-	HBITMAP hbitmap;*/
 	static RECT clientRect;
 	TCHAR txt[100];
 
@@ -170,7 +177,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	switch (iMessage) {
 	case WM_CREATE:
 	{
-
 		InitDirect2D(hWnd);
 		CoInitialize(NULL); // WIC용
 		HRESULT hr = CoCreateInstance(
@@ -246,18 +252,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		SetWindowPos(hWnd, NULL, 0, 0, 0, 0,
 			SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 
-		RECT wr, cr;
-		GetWindowRect(hWnd, &wr);
-		GetClientRect(hWnd, &cr);
-
-		TCHAR buf[200];
-		wsprintf(buf, _T("W: %d H: %d / CW: %d CH: %d"),
-			wr.right - wr.left,
-			wr.bottom - wr.top,
-			cr.right - cr.left,
-			cr.bottom - cr.top);
-
-		MessageBox(hWnd, buf, _T("SIZE"), MB_OK);
+		
 
 		break;
 	} //WM_CREATE switch
@@ -266,17 +261,34 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	{
 		switch (wParam) {
 		case 'a':
-			bx -= 10; //카메라 이동 (수정. 플레이어 이동에 따라 카메라가 따라오도록 수정)
+		case 'A':
+			bx -= 3; //카메라 이동 (수정. 플레이어 이동에 따라 카메라가 따라오도록 수정)
 			break;
+		case 'D':
 		case 'd':
-			bx += 10;
+			bx += 3;
 			break;
+		case 'W':
 		case 'w':
-			by -= 10;
+			by -= 3;
 			break;
+		case 'S':
 		case 's':
-			by += 10;
+			by += 3;
 			break;
+		case 'k':
+		case 'K':
+		{
+			const Player& p = PlayerManager::GetInstance().GetPlayers()[0];
+
+			TCHAR buf[200];
+			wsprintf(buf, _T("x: %d y: %d"),
+				p.GetPos().x,
+				p.GetPos().y);
+
+			MessageBox(hWnd, buf, _T("SIZE"), MB_OK);
+			break;
+		}
 		case 'Q':
 		case 'q':
 			//게임 종료 (수정. 타이틀 화면에서만 종료, 게임플레이 중에는 확인창 띄우기)
@@ -298,19 +310,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	} //WM_KEYDOWN switch
 	case WM_PAINT:
 	{
-
-
 		//클라이언트 값 가져오기
 		GetClientRect(hWnd, &clientRect);
 
 		//렌더링을 위한 HDC설정 (더블버퍼링)
 		hdc = BeginPaint(hWnd, &ps);
-		/*mdc = CreateCompatibleDC(hdc);
-		hbitmap = CreateCompatibleBitmap(hdc, clientRect.right, clientRect.bottom);
-		SelectObject(mdc, (HBITMAP)hbitmap);
-		memdc = CreateCompatibleDC(mdc);
-		memdc2 = CreateCompatibleDC(mdc);
-		FillRect(mdc, &clientRect, (HBRUSH)GetStockObject(WHITE_BRUSH));*/
 
 		//Direct2D 렌더링 시작
 		g_pRenderTarget->BeginDraw();
@@ -345,11 +349,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		g_pRenderTarget->EndDraw();
 
 		//GDI 렌더링 끝, 메모리 해제
-		/*DeleteDC(memdc);
-		DeleteDC(memdc2);
-		DeleteDC(mdc);
-		DeleteObject(hbitmap);
-		*/
 		EndPaint(hWnd, &ps);
 		break;
 	} //WM_PAINT switch
