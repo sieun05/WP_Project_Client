@@ -114,7 +114,7 @@ int  WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		double deltaTime = (currentTime - lastTime) / 1000.0; // 초 단위로 변환
 		lastTime = currentTime;
 
-		if (g_myId != -1) {
+		if (g_myId) {
 			Vec2 ppos = PlayerManager::GetInstance().GetPlayers()[g_myId].GetPos();
 
 			//카메라 위치는 플레이어 좌표값에 종속
